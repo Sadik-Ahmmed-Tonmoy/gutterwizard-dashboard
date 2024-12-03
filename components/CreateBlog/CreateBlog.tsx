@@ -38,12 +38,12 @@ const formats = [
     'underline',
     'strike',
     'blockquote',
-    'list', // Ensure 'list' format is included
-    'bullet', // Ensure 'bullet' format is included
+    'list',
+    'bullet',
     'indent',
     'link',
-    'image',
-    'video',
+    // 'image',
+    // 'video',
     'align',
 ];
 

@@ -42,8 +42,8 @@ const formats = [
     'bullet', // Ensure 'bullet' format is included
     'indent',
     'link',
-    'image',
-    'video',
+    // 'image',
+    // 'video',
     'align',
 ];
 
