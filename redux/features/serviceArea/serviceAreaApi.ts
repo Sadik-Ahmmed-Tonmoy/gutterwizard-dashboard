@@ -5,9 +5,10 @@ import { baseApi } from "../../api/baseApi";
 const serviceAreaApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     addNewServiceAreas: builder.mutation({
-      query: () => ({
+      query: (data) => ({
         url: "service-area/add",
         method: "POST",
+        body: data,
       }),
       invalidatesTags: ["serviceArea"],
     }),

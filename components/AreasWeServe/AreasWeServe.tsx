@@ -151,13 +151,18 @@ const AreasWeServe = () => {
     );
     useEffect(() => {
         const fetchAndUpdateServiceAreas = async () => {
-            if (getAllServiceAreasQuery?.data?.length < 10) {
+            if (getAllServiceAreasQuery?.data?.length < 6) {
                 const res = await handleAsyncWithToast(
                     async () => {
-                        return addNewServiceAreasMutation({
-                            section: "section", 
-                            list: [] 
-                        });
+                        return addNewServiceAreasMutation(
+                            [
+                                {
+                                    "section": "section",
+                                    "list": [
+                                    ]
+                                }
+                            ]
+                        );
                     },
                     'Updating...',
                     'Update successful!',
@@ -167,7 +172,7 @@ const AreasWeServe = () => {
         };
     
         fetchAndUpdateServiceAreas();
-    }, [getAllServiceAreasQuery?.data]); 
+    }, [getAllServiceAreasQuery]); 
 
     return (
         <div>
