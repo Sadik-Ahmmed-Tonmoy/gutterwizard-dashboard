@@ -23,6 +23,7 @@ const GetAllBlogs = () => {
                     getAllBlogs?.data?.blogs.map((item: any) => (
                         <BlogCard
                             key={item._id}
+                            id={item._id}
                             imageSrc={item.banner}
                             author={item?.authorId?.username}
                             date={item.createdAt}
