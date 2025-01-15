@@ -1,14 +1,14 @@
 'use client';
 import IconLockDots from '@/components/icon/icon-lock-dots';
 import IconMail from '@/components/icon/icon-mail';
-import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useLoginMutation } from '@/redux/features/auth/authApi';
 import { addTokenToLocalStorage } from '@/utils/tokenHandler';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { FieldValues, useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
+import { z } from 'zod';
 
 // Zod schema for extreme validation
 const formSchema = z.object({

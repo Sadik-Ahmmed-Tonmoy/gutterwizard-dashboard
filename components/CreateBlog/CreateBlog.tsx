@@ -12,6 +12,9 @@ import { useCreateBlogMutation } from '@/redux/features/blog/blogApi';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
 import { useRouter } from 'next/navigation';
+import { useGetCategoriesQuery } from '@/redux/features/categories/categoriesApi';
+import MyFormSelect from '../MyForm/MyFormSelect/MyFormSelect';
+import MyFormTextArea from '../ui/MyForm/MyFormTextArea/MyFormTextArea';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -58,19 +61,27 @@ const validationSchema = z.object({
         .string({
             required_error: 'Category is required',
         })
-        .min(1, 'Category is required')
-        .max(100, 'Category cannot be longer than 100 characters'),
-    image: z.instanceof(File).refine((file) => (file ? file.size <= 50 * 1024 * 1024 : true), {
-        message: 'Image size must be less than 50MB',
-    }),
+        .min(1, 'Category is required'),
+        tags: z.array(z.string({
+            required_error: 'Tags is required',
+        })),
+        metaDescription: z
+        .string({
+            required_error: 'Meta Description is required',
+        })
+        .min(1, 'Meta Description is required'),
+        image: z.instanceof(File).refine((file) => (file ? file.size <= 50 * 1024 * 1024 : true), {
+            message: 'Image size must be less than 50MB',
+        }),
+        // image: z.any(),
 });
 
 const CreateBlog = () => {
+      const { data: getCategoriesQuery, isLoading, isFetching } = useGetCategoriesQuery(undefined);
     const [createBlogMutation] = useCreateBlogMutation();
     const [content, setContent] = useState('');
     const router = useRouter()
-    const handleSubmit = async (data: any, reset: () => void) => {
-        
+    const handleSubmit = async (data: any, reset: () => void) => {      
         const formData = new FormData();
         if (data.image) {
             formData.append('image', data.image);
@@ -80,6 +91,8 @@ const CreateBlog = () => {
             content: content, // Set the content from ReactQuill
             category: data.category,
             title: data.title,
+            tags: data.tags.join(','),
+            metaDescription: data.metaDescription,
         };
         console.log(body);
         
@@ -108,6 +121,13 @@ const CreateBlog = () => {
         }
     };
 
+    const categoryList = getCategoriesQuery?.data?.categories?.map((item: any) => ({
+        label: item?.name,
+        value: item?.name,
+    }));
+    
+    console.log(categoryList);
+
     return (
         <div className="container w-full">
             <div className="my-10 md:my-20">
@@ -126,7 +146,13 @@ const CreateBlog = () => {
                                 <MyFormInput label="Title" name={'title'} placeHolder="Blog Title" />
                             </div>
                             <div className="w-full">
-                                <MyFormInput label="Category" name={'category'} placeHolder="Provide category" />
+                                <MyFormSelect label="Category" name={'category'}  options={categoryList} placeHolder="Provide category" />
+                            </div>
+                            <div className="w-full">
+                                <MyFormSelect label="Tags" name={'tags'}  mode='tags' placeHolder="Type and enter your tags" />
+                            </div>
+                            <div className="w-full">
+                                <MyFormTextArea label="Meta Description" name={'metaDescription'} placeHolder="Meta Description" />
                             </div>
                         </div>
                         <div className="h-full w-full ">

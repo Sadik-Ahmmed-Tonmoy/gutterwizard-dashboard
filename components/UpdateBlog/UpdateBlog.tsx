@@ -4,6 +4,7 @@ import MyFormImageUpload from '@/components/ui/MyForm/MyFormImageUpload/MyFormIm
 import MyFormInput from '@/components/ui/MyForm/MyFormInput/MyFormInput';
 import MyFormWrapper from '@/components/ui/MyForm/MyFormWrapper/MyFormWrapper';
 import { useGetSingleBlogQuery, useUpdateBlogMutation } from '@/redux/features/blog/blogApi';
+import { useGetCategoriesQuery } from '@/redux/features/categories/categoriesApi';
 import { handleAsyncWithToast } from '@/utils/handleAsyncWithToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import dynamic from 'next/dynamic';
@@ -12,6 +13,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import 'react-quill/dist/quill.snow.css';
 import { z } from 'zod';
+import MyFormSelect from '../MyForm/MyFormSelect/MyFormSelect';
+import MyFormTextArea from '../ui/MyForm/MyFormTextArea/MyFormTextArea';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -54,12 +57,22 @@ const validationSchema = z.object({
         })
         .min(1, 'Title is required')
         .max(100, 'Title cannot be longer than 100 characters'),
+
     category: z
         .string({
             required_error: 'Category is required',
         })
-        .min(1, 'Category is required')
-        .max(100, 'Category cannot be longer than 100 characters'),
+        .min(1, 'Category is required'),
+    tags: z.array(
+        z.string({
+            required_error: 'Tags is required',
+        })
+    ),
+    metaDescription: z
+        .string({
+            required_error: 'Meta Description is required',
+        })
+        .min(1, 'Meta Description is required'),
     image: z.union([
         z.string({
             required_error: 'Image is required',
@@ -68,16 +81,22 @@ const validationSchema = z.object({
             message: 'Image size must be less than 50MB',
         }), // Validation for File type
     ]),
+    // image: z.any()
 });
 
 const UpdateBlog = () => {
+    const { data: getCategoriesQuery } = useGetCategoriesQuery(undefined);
+    const categoryList = getCategoriesQuery?.data?.categories?.map((item: any) => ({
+        label: item?.name,
+        value: item?.name,
+    }));
     const router = useRouter();
     const params = useParams();
     const { updateBlogId } = params;
     const [updateBlogMutation] = useUpdateBlogMutation();
-    const { data: blogData } = useGetSingleBlogQuery(updateBlogId);
+    const { data: blogData , isLoading } = useGetSingleBlogQuery(updateBlogId);
 
-    console.log(blogData?.data);
+
 
     const [content, setContent] = useState('');
 
@@ -96,8 +115,9 @@ const UpdateBlog = () => {
             content: content, // Set the content from ReactQuill
             category: data.category,
             title: data.title,
+            tags: data.tags.join(','),
+            metaDescription: data.metaDescription,
         };
-        console.log(body);
 
         // Append the body object as a JSON string
         formData.append('data', JSON.stringify(body));
@@ -123,11 +143,14 @@ const UpdateBlog = () => {
             console.error('Error submitting form:', error);
         }
     };
+    if(isLoading){
+        return <div className='loader mx-auto my-auto  text-xl md:text-5xl'></div>; 
+    }
 
     return (
         <div className="container w-full">
             <div className="my-10 md:my-20">
-            <h3 className='text-center text-3xl font-semibold'>Update Blog</h3>
+                <h3 className="text-center text-3xl font-semibold">Update Blog</h3>
                 <MyFormWrapper className={'flex w-full flex-col gap-6'} onSubmit={handleSubmit} resolver={zodResolver(validationSchema)}>
                     <div className="w-full">
                         {/* ReactQuill Editor */}
@@ -141,8 +164,15 @@ const UpdateBlog = () => {
                             <div className="w-full">
                                 <MyFormInput label="Title" name={'title'} value={blogData?.data?.title} placeHolder="Blog Title" />
                             </div>
+                           
                             <div className="w-full">
-                                <MyFormInput label="Category" name={'category'} value={blogData?.data?.category} placeHolder="Provide category" />
+                                <MyFormSelect label="Category" name={'category'} defaultValue={blogData?.data?.category} options={categoryList} placeHolder="Provide category" />
+                            </div>
+                            <div className="w-full">
+                                <MyFormSelect label="Tags" name={'tags'} defaultValue={blogData?.data?.tags?.split(',')} mode='tags' placeHolder="Type and enter your tags" />
+                            </div>
+                            <div className="w-full">
+                                <MyFormTextArea label="Meta Description" value={blogData?.data?.metaDescription} name={'metaDescription'} placeHolder="Meta Description" />
                             </div>
                         </div>
                         <div className="h-full w-full ">

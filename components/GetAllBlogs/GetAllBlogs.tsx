@@ -8,13 +8,17 @@ import { Pagination, PaginationProps } from 'antd';
 const GetAllBlogs = () => {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
-    const { data: getAllBlogs } = useGetAllBlogsQuery({ page, limit });
+    const { data: getAllBlogs, isLoading } = useGetAllBlogsQuery({ page, limit });
  
-    console.log(getAllBlogs?.data);
+    
     const onChange: PaginationProps['onChange'] = (page) => {
-        
         setPage(page);
       };
+
+if(isLoading){
+    return <div className='loader mx-auto my-auto  text-xl md:text-5xl'></div>; 
+ }
+
     return (
         <div>
             <h3 className='text-center text-3xl my-3 font-semibold'>All Blogs</h3>
