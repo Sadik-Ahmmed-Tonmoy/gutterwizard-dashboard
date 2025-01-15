@@ -21,6 +21,7 @@ import IconMenuDashboard from '../icon/menu/icon-menu-dashboard';
 import Image from 'next/image';
 import { PiMapPinAreaBold } from 'react-icons/pi';
 import { BsChatRightQuote } from 'react-icons/bs';
+import { TbChartScatter3D } from 'react-icons/tb';
 
 const Sidebar = () => {
     const dispatch = useDispatch();
@@ -178,6 +179,14 @@ const Sidebar = () => {
                                         </li> */}
                                     </ul>
                                 </AnimateHeight>
+                            </li>
+                            <li className="nav-item">
+                                <Link href="/category" className="group">
+                                    <div className="flex items-center">
+                                        <TbChartScatter3D className="shrink-0 group-hover:!text-primary" />
+                                        <span className="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">{t('Category')}</span>
+                                    </div>
+                                </Link>
                             </li>
                             <li className="nav-item">
                                 <Link href="/all-quote" className="group">
